@@ -77,7 +77,7 @@ class ModelNetTrainer(object):
                 log_str = 'epoch %d, step %d: train_loss %.3f; train_acc %.3f' % (epoch+1, i+1, loss, acc)
                 if (i+1)%1==0:
                     print(log_str)
-                i_acc += i
+            i_acc += i
 
             # evaluation
             if (epoch+1)%1==0:
