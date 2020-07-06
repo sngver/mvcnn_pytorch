@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     pretraining = not args.no_pretraining
     log_dir = os.path.join(args.log_path,args.name)
-    create_folder(args.name)
+    create_folder(log_dir)
     config_f = open(os.path.join(log_dir, 'config.json'), 'w')
     json.dump(vars(args), config_f)
     config_f.close()
