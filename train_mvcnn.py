@@ -11,6 +11,7 @@ from models.MVCNN import MVCNN, SVCNN
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-name", "--name", type=str, help="Name of the experiment", default="MVCNN")
+parser.add_argument("-log_path", "--log_path", type=str, help="Log path of the experiment", default="")
 parser.add_argument("-bs", "--batchSize", type=int, help="Batch size for the second stage", default=8)# it will be *12 images in each batch for mvcnn
 parser.add_argument("-num_models", type=int, help="number of models per class", default=1000)
 parser.add_argument("-lr", type=float, help="learning rate", default=5e-5)
@@ -36,14 +37,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     pretraining = not args.no_pretraining
-    log_dir = args.name
+    log_dir = os.path.join(args.log_path,args.name)
     create_folder(args.name)
     config_f = open(os.path.join(log_dir, 'config.json'), 'w')
     json.dump(vars(args), config_f)
     config_f.close()
 
     # STAGE 1
-    log_dir = args.name+'_stage_1'
+    log_dir = os.path.join(args.log_path,args.name+'_stage_1')
     create_folder(log_dir)
     cnet = SVCNN(args.name, nclasses=40, pretraining=pretraining, cnn_name=args.cnn_name)
 
@@ -62,7 +63,7 @@ if __name__ == '__main__':
     trainer.train(args.epoch)
 
     # STAGE 2
-    log_dir = args.name+'_stage_2'
+    log_dir = os.path.join(args.log_path,args.name+'_stage_2')
     create_folder(log_dir)
     cnet_2 = MVCNN(args.name, cnet, nclasses=40, cnn_name=args.cnn_name, num_views=args.num_views)
     del cnet
