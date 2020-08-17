@@ -37,14 +37,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     pretraining = not args.no_pretraining
-    log_path = os.path.join(args.log_path, args.name)
-    create_folder(log_path)
-    config_f = open(os.path.join(log_path, 'config.json'), 'w')
+    log_dir = os.path.join(args.log_path, args.name)
+    create_folder(log_dir)
+    config_f = open(os.path.join(log_dir, 'config.json'), 'w')
     json.dump(vars(args), config_f)
     config_f.close()
 
     # STAGE 1
-    log_dir = os.path.join(log_path, args.name+'_stage_1')
+    log_dir = os.path.join(args.log_path, args.name, args.name+'_stage_1')
     create_folder(log_dir)
     cnet = SVCNN(args.name, nclasses=40, pretraining=pretraining, cnn_name=args.cnn_name)
 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     trainer.train(args.epoch)
 
     # STAGE 2
-    log_dir = os.path.join(log_path,args.name+'_stage_2')
+    log_dir = os.path.join(args.log_path, args.name, args.name+'_stage_2')
     create_folder(log_dir)
     cnet_2 = MVCNN(args.name, cnet, nclasses=40, cnn_name=args.cnn_name, num_views=args.num_views)
     del cnet
