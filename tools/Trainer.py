@@ -90,7 +90,16 @@ class ModelNetTrainer(object):
             # save best model
             if val_overall_acc > best_acc:
                 best_acc = val_overall_acc
-                self.model.save(self.log_dir, epoch)
+                
+                savepath = str(self.log_dir) + '/best_model' + str(epoch) + '.pth'
+                log_string('Saving at %s'% savepath)
+                state = {
+                    'epoch': epoch,
+                    'best_acc': best_acc,
+                    'model_state_dict': self.model.state_dict(),
+                    'optimizer_state_dict': self.optimizer.state_dict(),
+                }
+                torch.save(state, savepath)
  
             # adjust learning rate manually
             if epoch > 0 and (epoch+1) % 10 == 0:
