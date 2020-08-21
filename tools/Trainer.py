@@ -92,7 +92,6 @@ class ModelNetTrainer(object):
                 best_acc = val_overall_acc
                 
                 savepath = str(self.log_dir) + '/best_model' + str(epoch) + '.pth'
-                log_str('Saving at %s'% savepath)
                 state = {
                     'epoch': epoch,
                     'best_acc': best_acc,
