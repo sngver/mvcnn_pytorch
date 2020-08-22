@@ -28,11 +28,25 @@ class ModelNetTrainer(object):
 
 
     def train(self, n_epochs):
-
-        best_acc = 0
+        
+        savepath = str(self.log_dir) + '/best_model.pth'
+        
+        try:
+            checkpoint = torch.load(str(savepath))
+            start_epoch = checkpoint['epoch']
+            best_acc = checkpoint['best_acc']
+            self.model.load_state_dict(checkpoint['model_state_dict'])
+            print('Use pretrain model')
+            print('Epoch: '.start_epoch)
+            print('Best Accuracy: ',best_acc)
+        except:
+            print('No existing model, starting training from scratch...')
+            start_epoch = 0
+            best_acc = 0
+        
         i_acc = 0
         self.model.train()
-        for epoch in range(n_epochs):
+        for epoch in range(start_epoch,n_epochs):
             # permute data for mvcnn
             rand_idx = np.random.permutation(int(len(self.train_loader.dataset.filepaths)/self.num_views))
             filepaths_new = []
@@ -91,12 +105,11 @@ class ModelNetTrainer(object):
             if val_overall_acc > best_acc:
                 best_acc = val_overall_acc
                 
-                savepath = str(self.log_dir) + '/best_model' + str(epoch) + '.pth'
                 state = {
                     'epoch': epoch,
                     'best_acc': best_acc,
                     'model_state_dict': self.model.state_dict(),
-                    'optimizer_state_dict': self.optimizer.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
                 }
                 torch.save(state, savepath)
  
