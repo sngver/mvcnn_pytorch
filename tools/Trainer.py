@@ -109,7 +109,7 @@ class ModelNetTrainer(object):
                     'epoch': epoch,
                     'best_acc': best_acc,
                     'model_state_dict': self.model.state_dict(),
-                    'optimizer_state_dict': optimizer.state_dict(),
+                    'optimizer_state_dict': self.optimizer.state_dict(),
                 }
                 torch.save(state, savepath)
  
