@@ -11,7 +11,7 @@ import time
 class ModelNetTrainer(object):
 
     def __init__(self, model, train_loader, val_loader, optimizer, loss_fn, \
-                 model_name, log_dir, num_views=12):
+                 model_name, log_dir, num_views=12, num_class=40):
 
         self.optimizer = optimizer
         self.model = model
@@ -21,6 +21,10 @@ class ModelNetTrainer(object):
         self.model_name = model_name
         self.log_dir = log_dir
         self.num_views = num_views
+        self.num_class = num_class
+        
+        DUMP_DIR = os.path.join(log_dir,'dump')
+        if not os.path.exists(DUMP_DIR): os.mkdir(DUMP_DIR)
 
         self.model.cuda()
         if self.log_dir is not None:
@@ -122,7 +126,7 @@ class ModelNetTrainer(object):
         self.writer.export_scalars_to_json(self.log_dir+"/all_scalars.json")
         self.writer.close()
 
-    def update_validation_accuracy(self, epoch):
+    def update_validation_accuracy(self, epoch, self.num_class):
         all_correct_points = 0
         all_points = 0
 
@@ -130,8 +134,8 @@ class ModelNetTrainer(object):
         # out_data = None
         # target = None
 
-        wrong_class = np.zeros(40)
-        samples_class = np.zeros(40)
+        wrong_class = np.zeros(self.num_class)
+        samples_class = np.zeros(self.num_class)
         all_loss = 0
 
         self.model.eval()
@@ -142,7 +146,11 @@ class ModelNetTrainer(object):
         total_print_time = 0.0
         all_target = []
         all_pred = []
-
+        
+        #
+        fout = open(os.path.join(DUMP_DIR, 'pred_label.txt'), 'w')
+        #
+        
         for _, data in enumerate(self.val_loader, 0):
 
             if self.model_name == 'mvcnn':
@@ -156,6 +164,11 @@ class ModelNetTrainer(object):
             pred = torch.max(out_data, 1)[1]
             all_loss += self.loss_fn(out_data, target).cpu().data.numpy()
             results = pred == target
+            
+            #
+            for i in range(list(pred.shape)[0]):
+                fout.write('%d, %d\n' % (pred[i], target[i]))
+            #
 
             for i in range(results.size()[0]):
                 if not bool(results[i].cpu().data.numpy()):
