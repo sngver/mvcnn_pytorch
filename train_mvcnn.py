@@ -80,7 +80,7 @@ if __name__ == '__main__':
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=args.batchSize, shuffle=False, num_workers=0)
     print('num_train_files: '+str(len(train_dataset.filepaths)))
     print('num_val_files: '+str(len(val_dataset.filepaths)))
-    trainer = ModelNetTrainer(cnet_2, train_loader, val_loader, optimizer, nn.CrossEntropyLoss(), 'mvcnn', log_dir, num_views=args.num_views)
+    trainer = ModelNetTrainer(cnet_2, train_loader, val_loader, optimizer, nn.CrossEntropyLoss(), 'mvcnn', log_dir, num_views=args.num_views, num_class=args.num_class)
     trainer.train(args.epoch)
 
 
