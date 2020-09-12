@@ -23,8 +23,6 @@ class ModelNetTrainer(object):
         self.num_views = num_views
         self.num_class = num_class
         
-        DUMP_DIR = os.path.join(log_dir,'dump')
-        if not os.path.exists(DUMP_DIR): os.mkdir(DUMP_DIR)
 
         self.model.cuda()
         if self.log_dir is not None:
@@ -41,7 +39,7 @@ class ModelNetTrainer(object):
             best_acc = checkpoint['best_acc']
             self.model.load_state_dict(checkpoint['model_state_dict'])
             print('Use pretrain model')
-            print('Epoch: '.start_epoch)
+            print('Epoch: ',start_epoch)
             print('Best Accuracy: ',best_acc)
         except:
             print('No existing model, starting training from scratch...')
@@ -100,7 +98,7 @@ class ModelNetTrainer(object):
             # evaluation
             if (epoch+1)%1==0:
                 with torch.no_grad():
-                    loss, val_overall_acc, val_mean_class_acc = self.update_validation_accuracy(epoch)
+                    loss, val_overall_acc, val_mean_class_acc = self.update_validation_accuracy(epoch,self.num_class)
                 self.writer.add_scalar('val/val_mean_class_acc', val_mean_class_acc, epoch+1)
                 self.writer.add_scalar('val/val_overall_acc', val_overall_acc, epoch+1)
                 self.writer.add_scalar('val/val_loss', loss, epoch+1)
@@ -126,16 +124,20 @@ class ModelNetTrainer(object):
         self.writer.export_scalars_to_json(self.log_dir+"/all_scalars.json")
         self.writer.close()
 
-    def update_validation_accuracy(self, epoch, self.num_class):
+    def update_validation_accuracy(self, epoch, num_class):
         all_correct_points = 0
         all_points = 0
-
+        
+        
+        DUMP_DIR = os.path.join(self.log_dir,'dump')
+        if not os.path.exists(DUMP_DIR): os.mkdir(DUMP_DIR)
+        
         # in_data = None
         # out_data = None
         # target = None
 
-        wrong_class = np.zeros(self.num_class)
-        samples_class = np.zeros(self.num_class)
+        wrong_class = np.zeros(num_class)
+        samples_class = np.zeros(num_class)
         all_loss = 0
 
         self.model.eval()
@@ -178,7 +180,11 @@ class ModelNetTrainer(object):
 
             all_correct_points += correct_points
             all_points += results.size()[0]
-
+        
+        #
+        fout.close()
+        #
+        
         print ('Total # of test models: ', all_points)
         val_mean_class_acc = np.mean((samples_class-wrong_class)/samples_class)
         acc = all_correct_points.float() / all_points
