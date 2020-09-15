@@ -13,12 +13,16 @@ import random
 class MultiviewImgDataset(torch.utils.data.Dataset):
 
     def __init__(self, root_dir, scale_aug=False, rot_aug=False, test_mode=False, \
-                 num_models=0, num_views=12, shuffle=True):
-        self.classnames=['airplane','bathtub','bed','bench','bookshelf','bottle','bowl','car','chair',
-                         'cone','cup','curtain','desk','door','dresser','flower_pot','glass_box',
-                         'guitar','keyboard','lamp','laptop','mantel','monitor','night_stand',
-                         'person','piano','plant','radio','range_hood','sink','sofa','stairs',
-                         'stool','table','tent','toilet','tv_stand','vase','wardrobe','xbox']
+                 num_models=0, num_views=12, shuffle=True, num_class=40):
+        if num_class == 40:
+            self.classnames=['airplane','bathtub','bed','bench','bookshelf','bottle','bowl','car','chair',
+                            'cone','cup','curtain','desk','door','dresser','flower_pot','glass_box',
+                            'guitar','keyboard','lamp','laptop','mantel','monitor','night_stand',
+                            'person','piano','plant','radio','range_hood','sink','sofa','stairs',
+                            'stool','table','tent','toilet','tv_stand','vase','wardrobe','xbox']
+        elif num_class == 3:
+            self.classnames = ['bottle', 'bowl', 'cup']
+
         self.root_dir = root_dir
         self.scale_aug = scale_aug
         self.rot_aug = rot_aug
