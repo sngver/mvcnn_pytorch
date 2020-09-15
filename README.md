@@ -7,7 +7,8 @@ First, download images and put it under ```modelnet40_images_new_12x```:
 Command for training:  
 ```python train_mvcnn.py -name mvcnn -num_models 1000 -weight_decay 0.001 -num_views 12 -cnn_name vgg11```
 
-  
+Command for testing:  
+```python train_mvcnn.py -num_views 12 -cnn_name vgg11 -log_path '/content/drive/My Drive/'```
   
 
 [Project webpage](https://people.cs.umass.edu/~jcsu/papers/shape_recog/)  
